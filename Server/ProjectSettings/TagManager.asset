@@ -4,6 +4,10 @@
 TagManager:
   tags:
   - Spawnpoint
+  - ServerManager
+  - ClientManager
+  - Chat
+  - GameManager
   - 
   Builtin Layer 0: Default
   Builtin Layer 1: TransparentFX

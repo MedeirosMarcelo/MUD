@@ -16,13 +16,7 @@ public class Chat : MonoBehaviour {
     private string playerName;
     private float lastUnfocusTime = 0;
     private Rect window;
-
-    //Server-only playerlist
-    private ArrayList playerList = new ArrayList();
-    class PlayerNode {
-        public string playerName;
-        public NetworkPlayer networkPlayer;
-    }
+    private ServerManager serverManager;
 
     private ArrayList chatEntries = new ArrayList();
     class ChatEntry {
@@ -31,86 +25,53 @@ public class Chat : MonoBehaviour {
     }
 
     void Awake() {
+        serverManager = GameObject.FindWithTag("ServerManager").GetComponent<ServerManager>();
         window = new Rect(Screen.width / 2 - width / 2, Screen.height - height + 5, width, height);
-    }
-
-    void RectifyUserName() {
-        playerName = PlayerPrefs.GetString("playerName", "");
-        if (playerName == "" || playerName == "UserName") {
-            playerName = "RandomName" + Random.Range(1, 999);
-        }
-    }
-
-    //Client function
-    void OnConnectedToServer() {
-        //We get the name from the masterserver example, if you entered your name there ;).
-        RectifyUserName();
-        ShowChatWindow();
-        networkView.RPC("TellServerOurName", RPCMode.Server, playerName);
-        // //We could have also announced ourselves:
-        // addGameChatMessage(playerName" joined the chat");
-        // //But using "TellServer.." we build a list of active players which we can use for other stuff as well.
-    }
-
-    //Server function
-    void OnServerInitialized() {
-        RectifyUserName();
-        ShowChatWindow();
-        //I wish Unity supported sending an RPC on the server to the server itself :(
-        // If so; we could use the same line as in "OnConnectedToServer();"
-        PlayerNode newEntry = new PlayerNode();
-        newEntry.playerName = playerName;
-        newEntry.networkPlayer = Network.player;
-        playerList.Add(newEntry);
-        addGameChatMessage(playerName + " joined the chat");
-    }
-
-    //A handy wrapper function to get the PlayerNode by networkplayer
-    PlayerNode GetPlayerNode(NetworkPlayer networkPlayer) {
-        foreach (PlayerNode entry in playerList) {
-            if (entry.networkPlayer == networkPlayer) {
-                return entry;
-            }
-        }
-        Debug.LogError("GetPlayerNode: Requested a playernode of non-existing player!");
-        return null;
-    }
-
-    //Server function
-    void OnPlayerDisconnected(NetworkPlayer player) {
-        addGameChatMessage("Player disconnected from: " + player.ipAddress + ":" + player.port);
-
-        //Remove player from the server list
-        playerList.Remove(GetPlayerNode(player));
     }
 
     void OnDisconnectedFromServer() {
         CloseChatWindow();
     }
 
-    //Server function
-    void OnPlayerConnected(NetworkPlayer player) {
-        addGameChatMessage("Player connected from: " + player.ipAddress + ":" + player.port);
+    void HitEnter(string msg) {
+        msg = msg.Replace("\n", "");
+        networkView.RPC("ApplyGlobalChatText", RPCMode.All, playerName, msg);
+        inputField = ""; //Clear line
+        //GUI.UnfocusWindow();//Deselect chat
+        //lastUnfocusTime = Time.time;
+        usingChat = false;
+    }
+
+    public void addGameChatMessage(string str) {
+        ApplyGlobalChatText("", str);
+        if (Network.connections.Length > 0) {
+            networkView.RPC("ApplyGlobalChatText", RPCMode.Others, "", str);
+        }
     }
 
     [RPC]
-    //Sent by newly connected clients, recieved by server
-    void TellServerOurName(string name, NetworkMessageInfo info) {
-        PlayerNode newEntry = new PlayerNode();
-        newEntry.playerName = name;
-        newEntry.networkPlayer = info.sender;
-        playerList.Add(newEntry);
+    void ApplyGlobalChatText(string name, string msg) {
+        ChatEntry entry = new ChatEntry();
+        entry.name = name;
+        entry.text = msg;
 
-        addGameChatMessage(name + " joined the chat");
+        chatEntries.Add(entry);
+
+        //Remove old entries
+        if (chatEntries.Count > maxLines) {
+            chatEntries.RemoveAt(0);
+        }
+
+        scrollPosition.y = 1000000;
     }
 
-    void CloseChatWindow() {
+    public void CloseChatWindow() {
         showChat = false;
         inputField = "";
         chatEntries = new ArrayList();
     }
 
-    void ShowChatWindow() {
+    public void ShowChatWindow() {
         showChat = true;
         inputField = "";
         chatEntries = new ArrayList();
@@ -172,39 +133,6 @@ public class Chat : MonoBehaviour {
                 GUI.UnfocusWindow();//Deselect chat
                 lastUnfocusTime = Time.time;
             }
-        }
-    }
-
-    void HitEnter(string msg) {
-        msg = msg.Replace("\n", "");
-        networkView.RPC("ApplyGlobalChatText", RPCMode.All, playerName, msg);
-        inputField = ""; //Clear line
-        //GUI.UnfocusWindow();//Deselect chat
-        //lastUnfocusTime = Time.time;
-        usingChat = false;
-    }
-
-    [RPC]
-    void ApplyGlobalChatText(string name, string msg) {
-        ChatEntry entry = new ChatEntry();
-        entry.name = name;
-        entry.text = msg;
-
-        chatEntries.Add(entry);
-
-        //Remove old entries
-        if (chatEntries.Count > maxLines) {
-            chatEntries.RemoveAt(0);
-        }
-
-        scrollPosition.y = 1000000;
-    }
-
-    //Add game messages etc
-    void addGameChatMessage(string str) {
-        ApplyGlobalChatText("", str);
-        if (Network.connections.Length > 0) {
-            networkView.RPC("ApplyGlobalChatText", RPCMode.Others, "", str);
         }
     }
 }

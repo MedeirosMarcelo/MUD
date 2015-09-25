@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class CommandReader : MonoBehaviour {
+public class CommandReader {
 
     public void ReadScript(string str) {
 
@@ -12,7 +12,7 @@ public class CommandReader : MonoBehaviour {
         return "";
     }
 
-    void CheckCommand(string str) {
+    public void CheckCommand(string str) {
 
         string command = GetCommand(str);
         Debug.Log("@" + command + ": ");
