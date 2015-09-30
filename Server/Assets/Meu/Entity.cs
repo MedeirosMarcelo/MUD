@@ -3,5 +3,6 @@ using System.Collections;
 
 public class Entity {
 
-    public Room room { get; private set; }
+    public string name;
+    public string description;
 }

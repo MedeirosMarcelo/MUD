@@ -7,16 +7,15 @@ public class Chat : MonoBehaviour {
     public bool usingChat = false;	//Can be used to determine if we need to stop player movement since we're chatting
     public GUISkin skin;						//Skin
     public bool showChat = false;			//Show/Hide the chat
+    public string playerName;
 
     private string inputField = "";
     private Vector2 scrollPosition;
     private int width = 500;
     private int height = 500;
     private int maxLines = 15;
-    private string playerName;
     private float lastUnfocusTime = 0;
     private Rect window;
-    private ServerManager serverManager;
 
     private ArrayList chatEntries = new ArrayList();
     class ChatEntry {
@@ -25,7 +24,6 @@ public class Chat : MonoBehaviour {
     }
 
     void Awake() {
-        serverManager = GameObject.FindWithTag("ServerManager").GetComponent<ServerManager>();
         window = new Rect(Screen.width / 2 - width / 2, Screen.height - height + 5, width, height);
     }
 

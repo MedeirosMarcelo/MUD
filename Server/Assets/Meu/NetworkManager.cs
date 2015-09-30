@@ -4,20 +4,16 @@ using System.Collections;
 public class NetworkManager : MonoBehaviour {
 
     Chat chat;
+    ServerManager serverManager;
 
     void Start() {
         chat = GameObject.FindWithTag("Chat").GetComponent<Chat>();
+        serverManager = GameObject.FindWithTag("ServerManager").GetComponent<ServerManager>();
     }
 
     [RPC]
-    void AddPlayerToServerList(string name, NetworkMessageInfo info) {
-        TellServerOurName(name, info);
-    }
-
-    void TellServerOurName(string name, NetworkMessageInfo info) {
-        PlayerNode newEntry = new PlayerNode();
-        newEntry.playerName = name;
-        newEntry.networkPlayer = info.sender;
+    public void TellServerOurName(string name, NetworkMessageInfo info) {
+        Player newEntry = new Player(name, info.sender);
         serverManager.playerList.Add(newEntry);
         chat.addGameChatMessage(name + " joined the chat");
     }

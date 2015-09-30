@@ -5,16 +5,18 @@ public class ClientManager : MonoBehaviour {
 
     public string playerName;
     Chat chat;
+    NetworkManager networkManager;
 
     void Start() {
         chat = GameObject.FindWithTag("Chat").GetComponent<Chat>();
+        networkManager = GetComponent<NetworkManager>();
     }
 
     //Client function
     void OnConnectedToServer() {
         RectifyUserName();
         chat.ShowChatWindow();
-        networkView.RPC("TellServerOurName", RPCMode.Server, playerName);
+        networkManager.networkView.RPC("TellServerOurName", RPCMode.Server, playerName);
     }
 
     void RectifyUserName() {

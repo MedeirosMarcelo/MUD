@@ -3,5 +3,5 @@ using System.Collections;
 
 public class MudObject : Entity {
 
-    public Player owner { get; private set; }
+    public Room room { get; private set; }
 }

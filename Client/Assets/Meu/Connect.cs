@@ -5,18 +5,20 @@ public class Connect : MonoBehaviour {
 
     public string connectToIP = "127.0.0.1";
     public int connectPort = 25001;
+    string userName = "UserName";
 
     void OnGUI() {
 
         if (Network.peerType == NetworkPeerType.Disconnected) {
             //We are currently disconnected: Not a client or host
             GUILayout.Label("Connection status: Disconnected");
-
+            userName = GUILayout.TextField(userName, GUILayout.MinWidth(100));
             connectToIP = GUILayout.TextField(connectToIP, GUILayout.MinWidth(100));
             connectPort = int.Parse(GUILayout.TextField(connectPort.ToString()));
 
             GUILayout.BeginVertical();
             if (GUILayout.Button("Connect as client")) {
+                PlayerPrefs.SetString("playerName", userName);
                 //Connect to the "connectToIP" and "connectPort" as entered via the GUI
                 //Ignore the NAT for now
         //        Network.useNat = false;
@@ -24,20 +26,16 @@ public class Connect : MonoBehaviour {
             }
 
             if (GUILayout.Button("Start Server")) {
+                PlayerPrefs.SetString("playerName", userName);
                 //Start a server for 32 clients using the "connectPort" given via the GUI
                 //Ignore the nat for now
                 Network.InitializeServer(32, connectPort, false);
             }
             GUILayout.EndVertical();
-
-
         }
         else {
-            //We've got a connection(s)!
-
-
+            //We've got a connection!
             if (Network.peerType == NetworkPeerType.Connecting) {
-
                 GUILayout.Label("Connection status: Connecting");
 
             }
@@ -81,6 +79,7 @@ public class Connect : MonoBehaviour {
 
     //Server functions called by Unity
     void OnPlayerConnected(NetworkPlayer player) {
+        PlayerPrefs.SetString("playerName", userName);
         Debug.Log("Player connected from: " + player.ipAddress + ":" + player.port);
     }
 

@@ -2,25 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class PlayerNode {
-    public string playerName;
-    public NetworkPlayer networkPlayer;
-}
-
 public class ServerManager : MonoBehaviour {
 
-    //Server-only playerlist
-    public IList<PlayerNode> playerList = new List<PlayerNode>();
+    public IList<Player> playerList = new List<Player>();
     Chat chat;
     string playerName;
 
 	void Start () {
         chat = GameObject.FindWithTag("Chat").GetComponent<Chat>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
 	}
 
     void ReadCommand(string str) {
@@ -31,6 +20,7 @@ public class ServerManager : MonoBehaviour {
     //Server function
     void OnPlayerConnected(NetworkPlayer player) {
         chat.addGameChatMessage("Player connected from: " + player.ipAddress + ":" + player.port);
+        chat.addGameChatMessage(GetComponent<GameManager>().map);
     }
     //Server function
     void OnPlayerDisconnected(NetworkPlayer player) {
@@ -43,9 +33,7 @@ public class ServerManager : MonoBehaviour {
     void OnServerInitialized() {
         RectifyUserName();
         chat.ShowChatWindow();
-        PlayerNode newEntry = new PlayerNode();
-        newEntry.playerName = playerName;
-        newEntry.networkPlayer = Network.player;
+        Player newEntry = new Player(playerName, Network.player);
         playerList.Add(newEntry);
         chat.addGameChatMessage(playerName + " joined the chat");
     }
@@ -55,10 +43,11 @@ public class ServerManager : MonoBehaviour {
         if (playerName == "" || playerName == "UserName") {
             playerName = "Admin";
         }
+        chat.playerName = playerName;
     }
 
-    PlayerNode GetPlayerNode(NetworkPlayer networkPlayer) {
-        foreach (PlayerNode entry in playerList) {
+    Player GetPlayerNode(NetworkPlayer networkPlayer) {
+        foreach (Player entry in playerList) {
             if (entry.networkPlayer == networkPlayer) {
                 return entry;
             }

@@ -7,23 +7,15 @@ public class Chat : MonoBehaviour {
     public bool usingChat = false;	//Can be used to determine if we need to stop player movement since we're chatting
     public GUISkin skin;						//Skin
     public bool showChat = false;			//Show/Hide the chat
+    public string playerName;
 
-    //Private vars used by the script
     private string inputField = "";
-
     private Vector2 scrollPosition;
     private int width = 500;
-    private int height = 180;
-    private string playerName;
+    private int height = 500;
+    private int maxLines = 15;
     private float lastUnfocusTime = 0;
     private Rect window;
-
-    //Server-only playerlist
-    private ArrayList playerList = new ArrayList();
-    class PlayerNode {
-        public string playerName;
-        public NetworkPlayer networkPlayer;
-    }
 
     private ArrayList chatEntries = new ArrayList();
     class ChatEntry {
@@ -33,87 +25,51 @@ public class Chat : MonoBehaviour {
 
     void Awake() {
         window = new Rect(Screen.width / 2 - width / 2, Screen.height - height + 5, width, height);
-
-        //We get the name from the masterserver example, if you entered your name there ;).
-        playerName = PlayerPrefs.GetString("playerName", "");
-        if (playerName == "") {
-            playerName = "RandomName" + Random.Range(1, 999);
-        }
-
-    }
-
-
-    //Client function
-    void OnConnectedToServer() {
-        ShowChatWindow();
-        networkView.RPC("TellServerOurName", RPCMode.Server, playerName);
-        // //We could have also announced ourselves:
-        // addGameChatMessage(playerName" joined the chat");
-        // //But using "TellServer.." we build a list of active players which we can use for other stuff as well.
-    }
-
-    //Server function
-    void OnServerInitialized() {
-        ShowChatWindow();
-        //I wish Unity supported sending an RPC on the server to the server itself :(
-        // If so; we could use the same line as in "OnConnectedToServer();"
-        PlayerNode newEntry = new PlayerNode();
-        newEntry.playerName = playerName;
-        newEntry.networkPlayer = Network.player;
-        playerList.Add(newEntry);
-        addGameChatMessage(playerName + " joined the chat");
-    }
-
-    //A handy wrapper function to get the PlayerNode by networkplayer
-    PlayerNode GetPlayerNode(NetworkPlayer networkPlayer) {
-        foreach (PlayerNode entry in playerList) {
-            if (entry.networkPlayer == networkPlayer) {
-                return entry;
-            }
-        }
-        Debug.LogError("GetPlayerNode: Requested a playernode of non-existing player!");
-        return null;
-    }
-
-
-    //Server function
-    void OnPlayerDisconnected(NetworkPlayer player) {
-        addGameChatMessage("Player disconnected from: " + player.ipAddress + ":" + player.port);
-
-        //Remove player from the server list
-        playerList.Remove(GetPlayerNode(player));
     }
 
     void OnDisconnectedFromServer() {
         CloseChatWindow();
     }
 
-    //Server function
-    void OnPlayerConnected(NetworkPlayer player) {
-        addGameChatMessage("Player connected from: " + player.ipAddress + ":" + player.port);
+    void HitEnter(string msg) {
+        msg = msg.Replace("\n", "");
+        networkView.RPC("ApplyGlobalChatText", RPCMode.All, playerName, msg);
+        inputField = ""; //Clear line
+        //GUI.UnfocusWindow();//Deselect chat
+        //lastUnfocusTime = Time.time;
+        usingChat = false;
     }
 
-    [@RPC]
-    //Sent by newly connected clients, recieved by server
-    void TellServerOurName(string name, NetworkMessageInfo info) {
-        PlayerNode newEntry = new PlayerNode();
-        newEntry.playerName = name;
-        newEntry.networkPlayer = info.sender;
-        playerList.Add(newEntry);
-
-        addGameChatMessage(name + " joined the chat");
+    public void addGameChatMessage(string str) {
+        ApplyGlobalChatText("", str);
+        if (Network.connections.Length > 0) {
+            networkView.RPC("ApplyGlobalChatText", RPCMode.Others, "", str);
+        }
     }
 
+    [RPC]
+    void ApplyGlobalChatText(string name, string msg) {
+        ChatEntry entry = new ChatEntry();
+        entry.name = name;
+        entry.text = msg;
 
+        chatEntries.Add(entry);
 
+        //Remove old entries
+        if (chatEntries.Count > maxLines) {
+            chatEntries.RemoveAt(0);
+        }
 
-    void CloseChatWindow() {
+        scrollPosition.y = 1000000;
+    }
+
+    public void CloseChatWindow() {
         showChat = false;
         inputField = "";
         chatEntries = new ArrayList();
     }
 
-    void ShowChatWindow() {
+    public void ShowChatWindow() {
         showChat = true;
         inputField = "";
         chatEntries = new ArrayList();
@@ -133,10 +89,8 @@ public class Chat : MonoBehaviour {
                 GUI.FocusControl("Chat input field");
             }
         }
-
         window = GUI.Window(5, window, GlobalChatWindow, "");
     }
-
 
     void GlobalChatWindow(int id) {
 
@@ -177,40 +131,6 @@ public class Chat : MonoBehaviour {
                 GUI.UnfocusWindow();//Deselect chat
                 lastUnfocusTime = Time.time;
             }
-        }
-    }
-
-    void HitEnter(string msg) {
-        msg = msg.Replace("\n", "");
-        networkView.RPC("ApplyGlobalChatText", RPCMode.All, playerName, msg);
-        inputField = ""; //Clear line
-        GUI.UnfocusWindow();//Deselect chat
-        lastUnfocusTime = Time.time;
-        usingChat = false;
-    }
-
-
-    [@RPC]
-    void ApplyGlobalChatText(string name, string msg) {
-        ChatEntry entry = new ChatEntry();
-        entry.name = name;
-        entry.text = msg;
-
-        chatEntries.Add(entry);
-
-        //Remove old entries
-        if (chatEntries.Count > 4) {
-            chatEntries.RemoveAt(0);
-        }
-
-        scrollPosition.y = 1000000;
-    }
-
-    //Add game messages etc
-    void addGameChatMessage(string str) {
-        ApplyGlobalChatText("", str);
-        if (Network.connections.Length > 0) {
-            networkView.RPC("ApplyGlobalChatText", RPCMode.Others, "", str);
         }
     }
 }

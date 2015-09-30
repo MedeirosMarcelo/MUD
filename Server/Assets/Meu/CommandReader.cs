@@ -4,7 +4,6 @@ using System.Collections;
 public class CommandReader {
 
     public void ReadScript(string str) {
-
         CheckCommand(str);
     }
 

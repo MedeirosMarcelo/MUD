@@ -132,6 +132,7 @@ MonoBehaviour:
   usingChat: 0
   skin: {fileID: 0}
   showChat: 0
+  playerName: 
 --- !u!1 &25
 GameObject:
   m_ObjectHideFlags: 0
@@ -292,9 +293,10 @@ GameObject:
   - 4: {fileID: 240215936}
   - 148: {fileID: 240215934}
   - 114: {fileID: 240215935}
+  - 114: {fileID: 240215937}
   m_Layer: 0
   m_Name: ServerManager
-  m_TagString: GameManager
+  m_TagString: ServerManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -331,11 +333,26 @@ Transform:
   m_PrefabInternal: {fileID: 1837099686}
   m_GameObject: {fileID: 240215933}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
+--- !u!114 &240215937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 240215933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95f65382381c3774abe5ab5519ea1296, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  map: "[ ]---[ ]---[ ]\r\n                           |     |     |\r\n                           |
+    \    |     |\r\n                          [ ]-- [ ]   [ ]\r\n                           |
+    \    |\r\n                           |     |\r\n                          [ ]---[
+    ]"
 --- !u!1001 &1043736178
 Prefab:
   m_ObjectHideFlags: 0
@@ -353,7 +370,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 427568, guid: 9e6330fd0c62968458eb43db80aaced5, type: 2}
       propertyPath: m_LocalPosition.z
-      value: -10
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 427568, guid: 9e6330fd0c62968458eb43db80aaced5, type: 2}
       propertyPath: m_LocalRotation.x
@@ -383,11 +400,71 @@ Prefab:
       propertyPath: m_ViewID.m_Type
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 11427568, guid: 9e6330fd0c62968458eb43db80aaced5, type: 2}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 127568, guid: 9e6330fd0c62968458eb43db80aaced5, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9e6330fd0c62968458eb43db80aaced5, type: 2}
   m_RootGameObject: {fileID: 1288220948}
   m_IsPrefabParent: 0
   m_IsExploded: 1
+--- !u!1 &1173447233
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 1173447235}
+  - 148: {fileID: 1173447236}
+  - 114: {fileID: 1173447234}
+  m_Layer: 0
+  m_Name: NetworkManager
+  m_TagString: NetworkManager
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1173447234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1173447233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7000b14f739db014f808c1ccf33d5166, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1173447235
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1173447233}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+--- !u!148 &1173447236
+NetworkView:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1173447233}
+  m_Enabled: 1
+  m_StateSynchronization: 1
+  m_Observed: {fileID: 1173447235}
+  m_ViewID:
+    m_ID: 4
+    m_Type: 1
 --- !u!1 &1288220948
 GameObject:
   m_ObjectHideFlags: 0
@@ -404,7 +481,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1288220949
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -417,6 +494,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab5726eaf32561d44bc0395cd82d4a78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerName: 
 --- !u!148 &1288220950
 NetworkView:
   m_ObjectHideFlags: 0
@@ -437,7 +515,7 @@ Transform:
   m_PrefabInternal: {fileID: 1043736178}
   m_GameObject: {fileID: 1288220948}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -487,6 +565,14 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 14878556, guid: 1a82ba6b7fb20ce41b2ad1c4ac67df36, type: 2}
       propertyPath: m_ViewID.m_Type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 178556, guid: 1a82ba6b7fb20ce41b2ad1c4ac67df36, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11460306, guid: 1a82ba6b7fb20ce41b2ad1c4ac67df36, type: 2}
+      propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -559,7 +645,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 433680, guid: cd2b5d6c553541b41856ef2c64e77fdd, type: 2}
       propertyPath: m_LocalPosition.z
-      value: -10
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 433680, guid: cd2b5d6c553541b41856ef2c64e77fdd, type: 2}
       propertyPath: m_LocalRotation.x
@@ -588,6 +674,10 @@ Prefab:
     - target: {fileID: 14833680, guid: cd2b5d6c553541b41856ef2c64e77fdd, type: 2}
       propertyPath: m_ViewID.m_Type
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 133680, guid: cd2b5d6c553541b41856ef2c64e77fdd, type: 2}
+      propertyPath: m_TagString
+      value: ServerManager
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cd2b5d6c553541b41856ef2c64e77fdd, type: 2}
