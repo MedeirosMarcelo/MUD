@@ -60,12 +60,9 @@ public class Connect : MonoBehaviour {
         }
     }
 
-    // NONE of the functions below is of any use in this demo, the code below is only used for demonstration.
-    // First ensure you understand the code in the OnGUI() function above.
-
-    //Client functions called by Unity
     void OnConnectedToServer() {
         Debug.Log("This CLIENT has connected to a server");
+
     }
 
     void OnDisconnectedFromServer(NetworkDisconnection info) {

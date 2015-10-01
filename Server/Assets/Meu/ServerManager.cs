@@ -6,7 +6,7 @@ public class ServerManager : MonoBehaviour {
 
     public IList<Player> playerList = new List<Player>();
     Chat chat;
-    string playerName;
+    string userName;
 
 	void Start () {
         chat = GameObject.FindWithTag("Chat").GetComponent<Chat>();
@@ -33,17 +33,16 @@ public class ServerManager : MonoBehaviour {
     void OnServerInitialized() {
         RectifyUserName();
         chat.ShowChatWindow();
-        Player newEntry = new Player(playerName, Network.player);
+        Player newEntry = new Player(userName, Network.player);
         playerList.Add(newEntry);
-        chat.addGameChatMessage(playerName + " joined the chat");
+        chat.addGameChatMessage(userName + " joined the chat");
     }
 
     void RectifyUserName() {
-        playerName = PlayerPrefs.GetString("playerName", "");
-        if (playerName == "" || playerName == "UserName") {
-            playerName = "Admin";
+        userName = PlayerPrefs.GetString("playerName", "");
+        if (userName == "" || userName == "UserName") {
+            userName = "Admin";
         }
-        chat.playerName = playerName;
     }
 
     Player GetPlayerNode(NetworkPlayer networkPlayer) {

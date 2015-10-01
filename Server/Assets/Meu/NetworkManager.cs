@@ -24,4 +24,13 @@ public class NetworkManager : MonoBehaviour {
     public void SendChatEntry(string msg) {
         commandReader.Read(msg);
     }
+
+    [RPC]
+    public void CheckUniqueName(string name, NetworkPlayer networkPlayer) {
+        foreach (Player player in serverManager.playerList) {
+            if (player.name == name) {
+                Network.CloseConnection(networkPlayer, true);
+            }
+        }
+    }
 }

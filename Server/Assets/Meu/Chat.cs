@@ -7,7 +7,6 @@ public class Chat : MonoBehaviour {
     public bool usingChat = false;	//Can be used to determine if we need to stop player movement since we're chatting
     public GUISkin skin;						//Skin
     public bool showChat = false;			//Show/Hide the chat
-    public string playerName;
 
     private string inputField = "";
     private Vector2 scrollPosition;
@@ -36,8 +35,12 @@ public class Chat : MonoBehaviour {
 
     void HitEnter(string msg) {
         msg = msg.Replace("\n", "");
-        networkManager.networkView.RPC("SendChatEntry", RPCMode.Server, msg);
-   //     networkView.RPC("ApplyGlobalChatText", RPCMode.All, playerName, msg); //Throw in CommandReader
+        if (Network.peerType == NetworkPeerType.Client) {
+            networkManager.networkView.RPC("SendChatEntry", RPCMode.Server, msg);
+        }
+        else if (Network.peerType == NetworkPeerType.Server) {
+            networkManager.SendChatEntry(msg);
+        }
         inputField = ""; //Clear line
         //GUI.UnfocusWindow();//Deselect chat
         //lastUnfocusTime = Time.time;

@@ -3,22 +3,20 @@ using System.Collections;
 
 public class CommandReader : MonoBehaviour {
 
-    string command;
+    Chat chat;
+
+    void Start() {
+        chat = GameObject.FindWithTag("Chat").GetComponent<Chat>();
+    }
 
     public void Read(string str) {
         CheckCommand(GetCommand(str));
-        command = str;
-    }
-
-    string GetCommand(string str) {
-        return "Test";
     }
 
     void CheckCommand(string command) {
-        Debug.Log("");
         switch (command) {
             case "Test":
-                Test();
+                Test(command);
                 break;
             default:
                 Debug.Log("WRONG COMMAND: " + command);
@@ -26,7 +24,12 @@ public class CommandReader : MonoBehaviour {
         }
     }
 
-    void Test() {
-        networkView.RPC("ApplyGlobalChatText", RPCMode.All, command);
+    string GetCommand(string str) {
+        return "Test";
+    }
+
+    void Test(string str) {
+        Debug.Log(str);
+        chat.networkView.RPC("ApplyGlobalChatText", RPCMode.All, "Server", str);
     }
 }

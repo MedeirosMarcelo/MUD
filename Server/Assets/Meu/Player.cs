@@ -4,12 +4,11 @@ using System.Collections.Generic;
 
 public class Player : MudObject {
 
-    public string playerName;
     public NetworkPlayer networkPlayer;
     IList<Item> inventory = new List<Item>();
 
     public Player(string name, NetworkPlayer networkPlayer) {
-        this.playerName = name;
+        this.name = name;
         this.networkPlayer = networkPlayer;
     }
 

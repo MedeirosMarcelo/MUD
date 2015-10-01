@@ -9,7 +9,7 @@ public class ClientManager : MonoBehaviour {
 
     void Start() {
         chat = GameObject.FindWithTag("Chat").GetComponent<Chat>();
-        networkManager = GetComponent<NetworkManager>();
+        networkManager = chat.GetComponent<NetworkManager>();
     }
 
     //Client function
