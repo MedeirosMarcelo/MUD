@@ -17,6 +17,8 @@ public class Chat : MonoBehaviour {
     private float lastUnfocusTime = 0;
     private Rect window;
 
+    NetworkManager networkManager;
+
     private ArrayList chatEntries = new ArrayList();
     class ChatEntry {
         public string name = "";
@@ -25,6 +27,7 @@ public class Chat : MonoBehaviour {
 
     void Awake() {
         window = new Rect(Screen.width / 2 - width / 2, Screen.height - height + 5, width, height);
+        networkManager = GetComponent<NetworkManager>();
     }
 
     void OnDisconnectedFromServer() {
@@ -33,7 +36,8 @@ public class Chat : MonoBehaviour {
 
     void HitEnter(string msg) {
         msg = msg.Replace("\n", "");
-        networkView.RPC("ApplyGlobalChatText", RPCMode.All, playerName, msg);
+        networkManager.networkView.RPC("SendChatEntry", RPCMode.Server, msg);
+   //     networkView.RPC("ApplyGlobalChatText", RPCMode.All, playerName, msg); //Throw in CommandReader
         inputField = ""; //Clear line
         //GUI.UnfocusWindow();//Deselect chat
         //lastUnfocusTime = Time.time;

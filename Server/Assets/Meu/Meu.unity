@@ -24,6 +24,7 @@ NavMeshSettings:
     minRegionArea: 2
     widthInaccuracy: 16.666666
     heightInaccuracy: 10
+    tileSizeHint: 0
   m_NavMesh: {fileID: 0}
 --- !u!104 &13
 RenderSettings:
@@ -294,6 +295,7 @@ GameObject:
   - 148: {fileID: 240215934}
   - 114: {fileID: 240215935}
   - 114: {fileID: 240215937}
+  - 114: {fileID: 240215938}
   m_Layer: 0
   m_Name: ServerManager
   m_TagString: ServerManager
@@ -353,6 +355,17 @@ MonoBehaviour:
     \    |     |\r\n                          [ ]-- [ ]   [ ]\r\n                           |
     \    |\r\n                           |     |\r\n                          [ ]---[
     ]"
+--- !u!114 &240215938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 240215933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cca562292c0a6c469679a15f4f60733, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1043736178
 Prefab:
   m_ObjectHideFlags: 0

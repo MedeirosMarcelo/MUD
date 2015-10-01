@@ -1,27 +1,32 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class CommandReader {
+public class CommandReader : MonoBehaviour {
 
-    public void ReadScript(string str) {
-        CheckCommand(str);
+    string command;
+
+    public void Read(string str) {
+        CheckCommand(GetCommand(str));
+        command = str;
     }
 
     string GetCommand(string str) {
-        return "";
+        return "Test";
     }
 
-    public void CheckCommand(string str) {
-
-        string command = GetCommand(str);
-        Debug.Log("@" + command + ": ");
-
+    void CheckCommand(string command) {
+        Debug.Log("");
         switch (command) {
-            case "wait":
+            case "Test":
+                Test();
                 break;
             default:
                 Debug.Log("WRONG COMMAND: " + command);
                 break;
         }
+    }
+
+    void Test() {
+        networkView.RPC("ApplyGlobalChatText", RPCMode.All, command);
     }
 }

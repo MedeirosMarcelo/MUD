@@ -14,7 +14,7 @@ public class ServerManager : MonoBehaviour {
 
     void ReadCommand(string str) {
         CommandReader commandReader = new CommandReader();
-        commandReader.CheckCommand(str);
+        commandReader.Read(str);
     }
 
     //Server function
