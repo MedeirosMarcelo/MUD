@@ -48,15 +48,14 @@
   <ItemGroup>
      <Compile Include="Assets\Meu\Chat.cs" />
      <Compile Include="Assets\Meu\ClientManager.cs" />
-     <Compile Include="Assets\Meu\CommandReader.cs" />
      <Compile Include="Assets\Meu\Connect.cs" />
      <Compile Include="Assets\Meu\Entity.cs" />
+     <Compile Include="Assets\Meu\Item.cs" />
      <Compile Include="Assets\Meu\LevelManager.cs" />
      <Compile Include="Assets\Meu\MudObject.cs" />
      <Compile Include="Assets\Meu\NetworkManager.cs" />
      <Compile Include="Assets\Meu\Player.cs" />
      <Compile Include="Assets\Meu\Room.cs" />
-     <Compile Include="Assets\Meu\ServerManager.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.3/UnityEngine.UI.dll</HintPath>
  </Reference>

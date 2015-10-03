@@ -145,7 +145,6 @@ MonoBehaviour:
   usingChat: 0
   skin: {fileID: 0}
   showChat: 0
-  playerName: 
 --- !u!1 &25
 GameObject:
   m_ObjectHideFlags: 0
@@ -474,7 +473,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab5726eaf32561d44bc0395cd82d4a78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerName: 
 --- !u!148 &1288220950
 NetworkView:
   m_ObjectHideFlags: 0

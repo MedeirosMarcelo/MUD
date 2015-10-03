@@ -14,9 +14,9 @@ public class NetworkManager : MonoBehaviour {
     }
 
     [RPC]
-    public void TellServerOurName(string name, NetworkMessageInfo info) {
-        Player newEntry = new Player(name, info.sender);
-        serverManager.playerList.Add(newEntry);
+    void TellServerOurName(string name, NetworkMessageInfo info) {
+        Player player = new Player(name, info.sender);
+        serverManager.playerList.Add(player);
         chat.addGameChatMessage(name + " joined the chat");
     }
 
@@ -26,11 +26,8 @@ public class NetworkManager : MonoBehaviour {
     }
 
     [RPC]
-    public void CheckUniqueName(string name, NetworkPlayer networkPlayer) {
-        foreach (Player player in serverManager.playerList) {
-            if (player.name == name) {
-                Network.CloseConnection(networkPlayer, true);
-            }
-        }
+    void RectifyName(string name, NetworkMessageInfo info) {
+        Player player = new Player(name, info.sender);
+        serverManager.RectifyUserName(player);
     }
 }

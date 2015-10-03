@@ -8,50 +8,71 @@ public class ServerManager : MonoBehaviour {
     Chat chat;
     string userName;
 
-	void Start () {
+    void Start() {
         chat = GameObject.FindWithTag("Chat").GetComponent<Chat>();
-	}
+    }
 
     void ReadCommand(string str) {
         CommandReader commandReader = new CommandReader();
         commandReader.Read(str);
     }
 
-    //Server function
     void OnPlayerConnected(NetworkPlayer player) {
         chat.addGameChatMessage("Player connected from: " + player.ipAddress + ":" + player.port);
         chat.addGameChatMessage(GetComponent<GameManager>().map);
     }
-    //Server function
+
     void OnPlayerDisconnected(NetworkPlayer player) {
         chat.addGameChatMessage("Player disconnected from: " + player.ipAddress + ":" + player.port);
-        //Remove player from the server list
         playerList.Remove(GetPlayerNode(player));
     }
 
-    //Server function
     void OnServerInitialized() {
-        RectifyUserName();
+        userName = PlayerPrefs.GetString("playerName");
+        Player newPlayer = new Player(userName, Network.player);
+        RectifyUserName(newPlayer);
         chat.ShowChatWindow();
-        Player newEntry = new Player(userName, Network.player);
-        playerList.Add(newEntry);
+        playerList.Add(newPlayer);
         chat.addGameChatMessage(userName + " joined the chat");
     }
 
-    void RectifyUserName() {
-        userName = PlayerPrefs.GetString("playerName", "");
-        if (userName == "" || userName == "UserName") {
-            userName = "Admin";
-        }
-    }
-
     Player GetPlayerNode(NetworkPlayer networkPlayer) {
-        foreach (Player entry in playerList) {
-            if (entry.networkPlayer == networkPlayer) {
-                return entry;
+        foreach (Player player in playerList) {
+            if (player.networkPlayer == networkPlayer) {
+                return player;
             }
         }
         Debug.LogError("GetPlayerNode: Requested a playernode of non-existing player!");
         return null;
+    }
+
+    public void RectifyUserName(Player player) {
+        bool hasSpace = player.name.Contains(" ");
+        if (hasSpace) {
+            Network.CloseConnection(player.networkPlayer, true);
+        }
+        else if (Network.peerType == NetworkPeerType.Client) {
+            if (player.name == "" || player.name == "UserName") {
+                player.name = "RandomName" + Random.Range(1, 999);
+            }
+            else if (CheckUniqueName(player)) {
+                player.name = PlayerPrefs.GetString("playerName");
+            }
+        }
+        else if (Network.peerType == NetworkPeerType.Server) {
+            if (player.name == "" || player.name == "UserName") {
+                player.name = "Server";
+            }
+        }
+    }
+
+    bool CheckUniqueName(Player player) {
+        foreach (Player pl in playerList) {
+            if (pl.name == player.name && pl != player) {
+                Network.CloseConnection(player.networkPlayer, true);
+                return false;
+            }
+        }
+        return true;
     }
 }

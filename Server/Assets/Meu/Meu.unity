@@ -145,7 +145,6 @@ MonoBehaviour:
   usingChat: 0
   skin: {fileID: 0}
   showChat: 0
-  playerName: 
 --- !u!1 &25
 GameObject:
   m_ObjectHideFlags: 0

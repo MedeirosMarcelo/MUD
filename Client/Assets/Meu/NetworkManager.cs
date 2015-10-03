@@ -4,7 +4,7 @@ using System.Collections;
 public class NetworkManager : MonoBehaviour {
 
     [RPC]
-    void TellServerOurName(string name, NetworkMessageInfo info) {
+    void TellServerOurName(string name) {
     }
 
     [RPC]
@@ -12,7 +12,6 @@ public class NetworkManager : MonoBehaviour {
     }
 
     [RPC]
-    public void CheckUniqueName() {
-
+    void RectifyName(string name, NetworkMessageInfo info) {
     }
 }

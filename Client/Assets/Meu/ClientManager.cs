@@ -13,21 +13,9 @@ public class ClientManager : MonoBehaviour {
     }
 
     void OnConnectedToServer() {
-        RectifyUserName();
+        userName = PlayerPrefs.GetString("playerName");
+        networkManager.networkView.RPC("RectifyName", RPCMode.Server, userName);
         chat.ShowChatWindow();
-        networkManager.networkView.RPC("TellServerOurName", RPCMode.Server, userName, Network.player);
-    }
-
-    void RectifyUserName() {
-        userName = PlayerPrefs.GetString("playerName", "");
-        if (userName == "" || userName == "UserName") {
-            userName = "RandomName" + Random.Range(1, 999);
-        }
-        VerifyNameUniqueness();
-    }
-
-
-    void VerifyNameUniqueness() {
-        networkManager.networkView.RPC("CheckUniqueName", RPCMode.Server, userName, Network.player);
+        networkManager.networkView.RPC("TellServerOurName", RPCMode.Server, userName);
     }
 }

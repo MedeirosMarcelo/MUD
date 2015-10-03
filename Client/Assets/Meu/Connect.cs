@@ -18,18 +18,30 @@ public class Connect : MonoBehaviour {
 
             GUILayout.BeginVertical();
             if (GUILayout.Button("Connect as client")) {
-                PlayerPrefs.SetString("playerName", userName);
-                //Connect to the "connectToIP" and "connectPort" as entered via the GUI
-                //Ignore the NAT for now
-        //        Network.useNat = false;
-                Network.Connect(connectToIP, connectPort);
+                if (!userName.Contains(" ")) {
+                    PlayerPrefs.SetString("playerName", userName);
+                    //Connect to the "connectToIP" and "connectPort" as entered via the GUI
+                    //Ignore the NAT for now
+                    //        Network.useNat = false;
+                    Network.Connect(connectToIP, connectPort);
+                }
+                else {
+                    GUILayout.Label("Spacing not alowed!");
+                    Debug.Log("Spacing not alowed!");
+                }
             }
 
             if (GUILayout.Button("Start Server")) {
-                PlayerPrefs.SetString("playerName", userName);
-                //Start a server for 32 clients using the "connectPort" given via the GUI
-                //Ignore the nat for now
-                Network.InitializeServer(32, connectPort, false);
+                if (!userName.Contains(" ")) {
+                    PlayerPrefs.SetString("playerName", userName);
+                    //Start a server for 32 clients using the "connectPort" given via the GUI
+                    //Ignore the nat for now
+                    Network.InitializeServer(32, connectPort, false);
+                }
+                else {
+                    GUILayout.Label("Spacing not alowed!");
+                    Debug.Log("Spacing not alowed!");
+                }
             }
             GUILayout.EndVertical();
         }
