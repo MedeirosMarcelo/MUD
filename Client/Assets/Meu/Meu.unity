@@ -24,7 +24,6 @@ NavMeshSettings:
     minRegionArea: 2
     widthInaccuracy: 16.666666
     heightInaccuracy: 10
-    tileSizeHint: 0
   m_NavMesh: {fileID: 0}
 --- !u!104 &13
 RenderSettings:
@@ -473,6 +472,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab5726eaf32561d44bc0395cd82d4a78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  userName: 
 --- !u!148 &1288220950
 NetworkView:
   m_ObjectHideFlags: 0

@@ -33,7 +33,7 @@ public class Connect : MonoBehaviour {
 
             if (GUILayout.Button("Start Server")) {
                 if (!userName.Contains(" ")) {
-                    PlayerPrefs.SetString("playerName", userName);
+                    PlayerPrefs.SetString("playerServerName", userName);
                     //Start a server for 32 clients using the "connectPort" given via the GUI
                     //Ignore the nat for now
                     Network.InitializeServer(32, connectPort, false);

@@ -39,7 +39,7 @@ public class Chat : MonoBehaviour {
             networkManager.networkView.RPC("SendChatEntry", RPCMode.Server, msg);
         }
         else if (Network.peerType == NetworkPeerType.Server) {
-            networkManager.SendChatEntry(msg);
+            networkManager.ServerSendChatEntry(msg);
         }
         inputField = ""; //Clear line
         //GUI.UnfocusWindow();//Deselect chat
@@ -55,7 +55,7 @@ public class Chat : MonoBehaviour {
     }
 
     [RPC]
-    void ApplyGlobalChatText(string name, string msg) {
+    public void ApplyGlobalChatText(string name, string msg) {
         ChatEntry entry = new ChatEntry();
         entry.name = name;
         entry.text = msg;

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class ClientManager : MonoBehaviour {
 
-    string userName;
+    public string userName;
     Chat chat;
     NetworkManager networkManager;
 
@@ -13,9 +13,8 @@ public class ClientManager : MonoBehaviour {
     }
 
     void OnConnectedToServer() {
-        userName = PlayerPrefs.GetString("playerName");
-        networkManager.networkView.RPC("RectifyName", RPCMode.Server, userName);
+        userName = PlayerPrefs.GetString("playerName");        
         chat.ShowChatWindow();
-        networkManager.networkView.RPC("TellServerOurName", RPCMode.Server, userName);
+        networkManager.networkView.RPC("InitializePlayer", RPCMode.Server, userName);
     }
 }

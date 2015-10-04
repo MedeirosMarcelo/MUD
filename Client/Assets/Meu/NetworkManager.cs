@@ -4,7 +4,7 @@ using System.Collections;
 public class NetworkManager : MonoBehaviour {
 
     [RPC]
-    void TellServerOurName(string name) {
+    void InitializePlayer(string userName, NetworkMessageInfo info) {
     }
 
     [RPC]

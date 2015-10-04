@@ -5,29 +5,24 @@ public class NetworkManager : MonoBehaviour {
 
     Chat chat;
     ServerManager serverManager;
-    CommandReader commandReader;
 
     void Start() {
         chat = GameObject.FindWithTag("Chat").GetComponent<Chat>();
         serverManager = GameObject.FindWithTag("ServerManager").GetComponent<ServerManager>();
-        commandReader = serverManager.GetComponent<CommandReader>();
     }
 
     [RPC]
-    void TellServerOurName(string name, NetworkMessageInfo info) {
-        Player player = new Player(name, info.sender);
-        serverManager.playerList.Add(player);
-        chat.addGameChatMessage(name + " joined the chat");
+    void InitializePlayer(string userName, NetworkMessageInfo info) {
+        serverManager.InitializePlayer(userName, info.sender);
     }
 
     [RPC]
-    public void SendChatEntry(string msg) {
-        commandReader.Read(msg);
+    public void SendChatEntry(string msg, NetworkMessageInfo info) {
+        serverManager.ReadCommand(msg, serverManager.GetPlayerNode(info.sender));
     }
 
-    [RPC]
-    void RectifyName(string name, NetworkMessageInfo info) {
-        Player player = new Player(name, info.sender);
-        serverManager.RectifyUserName(player);
+    public void ServerSendChatEntry(string msg) {
+        Debug.Log("ServerSendChatEntry");
+        serverManager.ReadCommand(msg, serverManager.playerServer);
     }
 }
