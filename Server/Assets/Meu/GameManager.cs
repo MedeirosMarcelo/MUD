@@ -5,8 +5,8 @@ public static class GameManager {
 
     public static Room[,] dungeon = new Room[3, 3];
     public static Room startingRoom;
-    public static string map = "[ ]---[ ]---[ ] \n  |     |     | \n  |     |     | \n [ ]---[ ]---[ ] \n  |     |     | \n  |     |     | \n [ ]---[ ]---[ ]"; //x 5 y 36
-    //1 7 11 47
+    public static string map = " [ ]---[ ]---[ ] \n  |     |     | \n  |     |     | \n [ ]---[ ]---[ ] \n  |     |     | \n  |     |     | \n [ ]---[ ]---[ ]";
+
     public static void BuildLevel () {
 
         Room room00 = new Room("room 00", "room description");
@@ -59,21 +59,19 @@ public static class GameManager {
     static int count = 0;
     public static string UpdateMapPosition(Player player, int val) {
         int[] pos = GetRoomPosition(player.room);
-        Debug.Log("UpdateMapPosition " + player.room.name + " " + player.name);
-        int offsetX = 6;
-        int offsetY = 40;
         int index = 0;
-        if (pos[0] == 0 && pos[1] == 0) index = 1;
-        if (pos[0] == 0 && pos[1] == 1) index = 7;
-        if (pos[0] == 0 && pos[1] == 2) index = 13;
-        if (pos[0] == 1 && pos[1] == 0) index = 53;
-        if (pos[0] == 1 && pos[1] == 1) index = 59;
-        if (pos[0] == 1 && pos[1] == 2) index = 65;
-        if (pos[0] == 2 && pos[1] == 0) index = 93;
-        if (pos[0] == 2 && pos[1] == 1) index = 99;
-        if (pos[0] == 2 && pos[1] == 2) index = 105;
+        if (pos[0] == 0 && pos[1] == 0) index = 2;
+        else if (pos[0] == 0 && pos[1] == 1) index = 8;
+        else if (pos[0] == 0 && pos[1] == 2) index = 14;
+        else if (pos[0] == 1 && pos[1] == 0) index = 54;
+        else if (pos[0] == 1 && pos[1] == 1) index = 60;
+        else if (pos[0] == 1 && pos[1] == 2) index = 66;
+        else if (pos[0] == 2 && pos[1] == 0) index = 106;
+        else if (pos[0] == 2 && pos[1] == 1) index = 112;
+        else if (pos[0] == 2 && pos[1] == 2) index = 118;
 
-
+      //  int offsetX = 6;
+      //  int offsetY = 40;
       //  string newMap = map.Remove((pos[0] * offsetX) * (pos[1] * offsetY) + 1, 1);
       //  string newMap = map.Insert((pos[0] * offsetX) * (pos[1] * offsetY) + 1, "x");
         string newMap = map.Remove(index, 1);
@@ -81,4 +79,29 @@ public static class GameManager {
         count++;
         return newMap;
     }
+
+    /*
+void CalcMap() {
+    string newMap = "";
+    bool breakLine = false;
+    int count = 0;
+    for (int i = 0; i < dungeon.GetLength(0); i++){
+        for (int j = 0; j < dungeon.GetLength(1); j++) {
+            if (dungeon[i, j] != null) {
+                newMap += "[ ]---";
+            }
+            else {
+                if (breakLine){
+                    newMap += "\n  |     |     |";
+                }
+                else {
+                        
+                }
+            }
+            if (j == 2) {
+                newMap = "\n  |     |     |";
+            }
+        }
+    }
+}*/
 }

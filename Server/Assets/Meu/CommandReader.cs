@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System;
 
 public class CommandReader : MonoBehaviour {
@@ -35,8 +36,11 @@ public class CommandReader : MonoBehaviour {
             case "examine":
                 Examine(command, player);
                 break;
-            case "roomname":
-                RoomExamine(command, player);
+            case "pickup":
+                PickUp(command, player);
+                break;
+            case "search":
+                Search(command, player);
                 break;
             case "ajuda":
                 Help(player);
@@ -63,6 +67,10 @@ public class CommandReader : MonoBehaviour {
             string direction = command[1].ToLower();
             if (actingPlayer.Move(direction)) {
                 ChatToPlayerOrServer(actingPlayer, "", command[0] + " " + command[1]);
+                ChatToPlayerOrServer(actingPlayer, "", GameManager.UpdateMapPosition(actingPlayer, 1));
+            }
+            else {
+                ChatToPlayerOrServer(actingPlayer, "", "You can't move that way.");
                 ChatToPlayerOrServer(actingPlayer, "", GameManager.UpdateMapPosition(actingPlayer, 1));
             }
         }
@@ -106,19 +114,45 @@ public class CommandReader : MonoBehaviour {
 
     void Examine(string[] command, Player actingPlayer) {
         if (command.Length == 2) {
-            string objName = command[1];
-            MudObject item = actingPlayer.room.GetItem(objName);
-            if (item != null) {
-                ChatToPlayerOrServer(actingPlayer, "", item.description);
+            if (command[1].ToLower() == "room") {
+                ChatToPlayerOrServer(actingPlayer, "", actingPlayer.room.name);
             }
             else {
-                ChatToPlayerOrServer(actingPlayer, "", "There is no such thing to examine.");
+                string objName = command[1];
+                MudObject item = actingPlayer.room.GetItem(objName);
+                if (item != null) {
+                    ChatToPlayerOrServer(actingPlayer, "", item.description);
+                }
+                else {
+                    ChatToPlayerOrServer(actingPlayer, "", "There is no such thing to examine.");
+                }
             }
         }
     }
 
-    void RoomExamine(string[] command, Player actingPlayer) {
-        ChatToPlayerOrServer(actingPlayer, "", actingPlayer.room.name);
+    void PickUp(string[] command, Player actingPlayer) {
+        if (actingPlayer.Pickup(command[1])){
+            ChatToPlayerOrServer(actingPlayer, "", "You put " + command[1] + " in your inventory");
+        }
+        else {
+            ChatToPlayerOrServer(actingPlayer, "", "There is no such thing in the room.");
+        }
+    }
+
+    void Search(string[] command, Player actingPlayer) {
+        if (command[1].ToLower() == "room") {
+            IList<Item> itemList = actingPlayer.room.Search();
+            string listItems = "";
+            if (itemList != null) {
+                foreach (Item item in itemList) {
+                    listItems += "You find " + item.name + " ";
+                }
+            }
+            ChatToPlayerOrServer(actingPlayer, "", listItems);
+        }
+        else {
+            ChatToPlayerOrServer(actingPlayer, "", "You find nothing.");
+        }
     }
 
     void Help(Player actingPlayer) {

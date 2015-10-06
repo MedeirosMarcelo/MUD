@@ -19,7 +19,7 @@ public class Room : Entity {
         }
     }
 
-    public void Enter (Player player) {
+    public void Enter(Player player) {
         playerList.Add(player);
     }
 
@@ -33,6 +33,15 @@ public class Room : Entity {
 
     public void AddObject(MudObject obj) {
         mudObjectList.Add(obj);
+    }
+
+    public IList<Item> Search() {
+        if (itemList.Count > 0) {
+            return itemList;
+        }
+        else {
+            return null;
+        }
     }
 
     public Item GetItem(string name) {

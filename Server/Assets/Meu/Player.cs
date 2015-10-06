@@ -19,24 +19,31 @@ public class Player : MudObject {
         int[] currentPos = GameManager.GetRoomPosition(room);
         Debug.Log(room.name + " Old Position " + currentPos[0] + " " + currentPos[1]);
         Room newRoom = null;
+        int lengthI = GameManager.dungeon.GetLength(0);
+        int lengthJ = GameManager.dungeon.GetLength(1);
         switch (direction) {
             case "north":
-                newRoom = GameManager.dungeon[currentPos[0] + 1, currentPos[1]];
+                if (currentPos[0] + 1 > lengthI) newRoom = GameManager.dungeon[currentPos[0] + 1, currentPos[1]];
                 break;
             case "south":
-                newRoom = GameManager.dungeon[currentPos[0] - 1, currentPos[1]];
+                if (currentPos[0] - 1 > 0) newRoom = GameManager.dungeon[currentPos[0] - 1, currentPos[1]];
                 break;
             case "east":
-                newRoom = GameManager.dungeon[currentPos[0], currentPos[1] + 1];
+                if (currentPos[1] + 1 > lengthJ) newRoom = GameManager.dungeon[currentPos[0], currentPos[1] + 1];
                 break;
             case "west":
-                newRoom = GameManager.dungeon[currentPos[0], currentPos[1] - 1];
+                if (currentPos[1] - 1 > lengthJ) newRoom = GameManager.dungeon[currentPos[0], currentPos[1] - 1];
                 break;
             default:
                 Debug.Log("Can't go to a gibberish direction");
                 return false;
         }
-        EnterRoom(newRoom);
+        if (newRoom != null) {
+            EnterRoom(newRoom);
+        }
+        else {
+            return false;
+        }
         currentPos = GameManager.GetRoomPosition(room);
         Debug.Log(newRoom.name + " New Position " + currentPos[0] + " " + currentPos[1]);
         return true;
@@ -60,24 +67,38 @@ public class Player : MudObject {
         this.room = newRoom;
     }
 
-    void Pickup(Item item) {
-        item.Owner = this;
-        inventory.Add(item);
+    public bool Pickup(string itemName) {
+        Item item = room.GetItem(itemName);
+        if (item != null) {
+            item.Owner = this;
+            inventory.Add(item);
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
-    void Drop(Item item) {
-        inventory.Remove(item);
-        item.Owner = this.room;
+    public bool Drop(string itemName) {
+        Item item = room.GetItem(itemName);
+        if (item != null) {
+            inventory.Remove(item);
+            item.Owner = this.room;
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
-    bool Use(Item item, MudObject target) {
+    public bool Use(Item item, MudObject target) {
         if (item.Usable == target) {
             return true;
         }
         return false;
     }
 
-    void ShowInventory() {
+    public void ShowInventory() {
         
     }
 
