@@ -50,12 +50,14 @@
      <Compile Include="Assets\Meu\ClientManager.cs" />
      <Compile Include="Assets\Meu\CommandReader.cs" />
      <Compile Include="Assets\Meu\Connect.cs" />
+     <Compile Include="Assets\Meu\Door.cs" />
      <Compile Include="Assets\Meu\Entity.cs" />
      <Compile Include="Assets\Meu\GameManager.cs" />
      <Compile Include="Assets\Meu\Item.cs" />
      <Compile Include="Assets\Meu\LevelManager.cs" />
      <Compile Include="Assets\Meu\MudObject.cs" />
      <Compile Include="Assets\Meu\NetworkManager.cs" />
+     <Compile Include="Assets\Meu\ObjectAction.cs" />
      <Compile Include="Assets\Meu\Player.cs" />
      <Compile Include="Assets\Meu\Room.cs" />
      <Compile Include="Assets\Meu\ServerManager.cs" />

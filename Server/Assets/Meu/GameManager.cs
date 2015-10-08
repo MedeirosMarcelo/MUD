@@ -36,7 +36,7 @@ public static class GameManager {
 
         startingRoom = room00;
 
-        Item key = new Item("Key", "A brass key", room00, room00);
+        Item key = new Item("Key", "A brass key", room00, null, Action.OpenDoor, room00);
         room00.AddItem(key);
     }
 
@@ -57,7 +57,7 @@ public static class GameManager {
     }
 
     static int count = 0;
-    public static string UpdateMapPosition(Player player, int val) {
+    public static string UpdateMapPosition(Player player) {
         int[] pos = GetRoomPosition(player.room);
         int index = 0;
         if (pos[0] == 0 && pos[1] == 0) index = 2;

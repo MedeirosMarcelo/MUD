@@ -33,7 +33,7 @@ public class ServerManager : MonoBehaviour {
     void OnServerInitialized() {
         userName = PlayerPrefs.GetString("playerServerName");
         userName = RectifyUserName(userName, Network.player);
-        Player newPlayer = new Player(userName, "A douchy Server", GameManager.startingRoom, Network.player);
+        Player newPlayer = new Player(userName, "A douchy Server", GameManager.startingRoom, Network.player, null, Action.None);
         newPlayer.isServer = true;
         playerServer = newPlayer;
         chat.ShowChatWindow();
@@ -43,7 +43,7 @@ public class ServerManager : MonoBehaviour {
 
     public void InitializePlayer(string userName, NetworkPlayer networkPlayer) {
         string newName = RectifyUserName(userName, networkPlayer);
-        Player player = new Player(newName, "A nerd", GameManager.startingRoom, networkPlayer);
+        Player player = new Player(newName, "A nerd", GameManager.startingRoom, networkPlayer, null, Action.None);
         playerList.Add(player);
         chat.addGameChatMessage(player.name + " joined the chat");
     }

@@ -8,8 +8,8 @@ public class Player : MudObject {
     public bool isServer;
     IList<Item> inventory = new List<Item>();
 
-    public Player(string name, string description, Room room, NetworkPlayer networkPlayer)
-        : base(name, description, room) {
+    public Player(string name, string description, Room room, NetworkPlayer networkPlayer, MudObject usable, Action action)
+        : base(name, description, room, usable, action) {
         this.name = name;
         this.room = room;
         this.networkPlayer = networkPlayer;
@@ -23,16 +23,16 @@ public class Player : MudObject {
         int lengthJ = GameManager.dungeon.GetLength(1);
         switch (direction) {
             case "north":
-                if (currentPos[0] + 1 > lengthI) newRoom = GameManager.dungeon[currentPos[0] + 1, currentPos[1]];
+                if (currentPos[0] - 1 >= 0) newRoom = GameManager.dungeon[currentPos[0] - 1, currentPos[1]];
                 break;
             case "south":
-                if (currentPos[0] - 1 > 0) newRoom = GameManager.dungeon[currentPos[0] - 1, currentPos[1]];
+                if (currentPos[0] + 1 < lengthI) newRoom = GameManager.dungeon[currentPos[0] + 1, currentPos[1]];
                 break;
             case "east":
-                if (currentPos[1] + 1 > lengthJ) newRoom = GameManager.dungeon[currentPos[0], currentPos[1] + 1];
+                if (currentPos[1] + 1 < lengthJ) newRoom = GameManager.dungeon[currentPos[0], currentPos[1] + 1];
                 break;
             case "west":
-                if (currentPos[1] - 1 > lengthJ) newRoom = GameManager.dungeon[currentPos[0], currentPos[1] - 1];
+                if (currentPos[1] - 1 >= 0) newRoom = GameManager.dungeon[currentPos[0], currentPos[1] - 1];
                 break;
             default:
                 Debug.Log("Can't go to a gibberish direction");
@@ -98,8 +98,22 @@ public class Player : MudObject {
         return false;
     }
 
-    public void ShowInventory() {
-        
+    public string GetInventoryList() {
+        if (inventory.Count > 0) {
+            string itemList = "";
+            bool first = true;
+            foreach (Item item in inventory) {
+                if (first) {
+                    itemList += item.name;
+                }
+                else {
+                    itemList += ", " + item.name;
+                    first = false;
+                }
+            }
+            return itemList + ".";
+        }
+        return "You have nothing with you.";
     }
 
     void Dead() {
