@@ -33,19 +33,19 @@ public class ServerManager : MonoBehaviour {
     void OnServerInitialized() {
         userName = PlayerPrefs.GetString("playerServerName");
         userName = RectifyUserName(userName, Network.player);
-        Player newPlayer = new Player(userName, "A douchy Server", GameManager.startingRoom, Network.player, null, Action.None);
+        Player newPlayer = new Player(userName, "A douchy server admin.", GameManager.startingRoom, Network.player, null, Action.None);
         newPlayer.isServer = true;
         playerServer = newPlayer;
         chat.ShowChatWindow();
         playerList.Add(newPlayer);
-        chat.addGameChatMessage(userName + " joined the chat");
+        chat.addGameChatMessage(userName + " joined the chat.");
     }
 
     public void InitializePlayer(string userName, NetworkPlayer networkPlayer) {
         string newName = RectifyUserName(userName, networkPlayer);
         Player player = new Player(newName, "A nerd", GameManager.startingRoom, networkPlayer, null, Action.None);
         playerList.Add(player);
-        chat.addGameChatMessage(player.name + " joined the chat");
+        chat.addGameChatMessage(player.name + " joined the chat.");
     }
 
     public string RectifyUserName(string playerName, NetworkPlayer networkPlayer) {
@@ -91,5 +91,16 @@ public class ServerManager : MonoBehaviour {
         }
         Debug.Log("GetPlayerNode: Requested a playernode of non-existing player!");
         return null;
+    }
+
+    public bool CheckGameOver(out Player player){
+        foreach (Player pl in playerList) {
+            if (pl.room.name == "room 22") {
+                player = pl;
+                return true;
+            }
+        }
+        player = null;
+        return false;
     }
 }

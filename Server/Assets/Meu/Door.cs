@@ -7,7 +7,7 @@ public class Door : MudObject {
     public Room room2;
 
     public Door(string name, string description, Room room, Room room2, MudObject usable, Entity owner, Action action)
-        : base (name, description, room, usable, action) {
+        : base(name, description, room, usable, action) {
     }
 
     public void Use() {

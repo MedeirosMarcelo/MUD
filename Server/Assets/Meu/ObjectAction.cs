@@ -15,7 +15,8 @@ public static class ObjectAction {
     }
 
     static void OpenDoor(Action action, MudObject target) {
-        
+        Door door = target as Door;
+        door.Open();
     }
 
     static void Shoot(Action action, MudObject target) {

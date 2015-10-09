@@ -6,6 +6,7 @@ public class Connect : MonoBehaviour {
     public string connectToIP = "127.0.0.1";
     public int connectPort = 25001;
     string userName = "UserName";
+    bool serverRights = false;
 
     void OnGUI() {
 
@@ -30,17 +31,18 @@ public class Connect : MonoBehaviour {
                     Debug.Log("Spacing not alowed!");
                 }
             }
-
-            if (GUILayout.Button("Start Server")) {
-                if (!userName.Contains(" ")) {
-                    PlayerPrefs.SetString("playerServerName", userName);
-                    //Start a server for 32 clients using the "connectPort" given via the GUI
-                    //Ignore the nat for now
-                    Network.InitializeServer(32, connectPort, false);
-                }
-                else {
-                    GUILayout.Label("Spacing not alowed!");
-                    Debug.Log("Spacing not alowed!");
+            if (serverRights) {
+                if (GUILayout.Button("Start Server")) {
+                    if (!userName.Contains(" ")) {
+                        PlayerPrefs.SetString("playerServerName", userName);
+                        //Start a server for 32 clients using the "connectPort" given via the GUI
+                        //Ignore the nat for now
+                        Network.InitializeServer(32, connectPort, false);
+                    }
+                    else {
+                        GUILayout.Label("Spacing not alowed!");
+                        Debug.Log("Spacing not alowed!");
+                    }
                 }
             }
             GUILayout.EndVertical();

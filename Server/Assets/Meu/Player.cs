@@ -10,9 +10,8 @@ public class Player : MudObject {
 
     public Player(string name, string description, Room room, NetworkPlayer networkPlayer, MudObject usable, Action action)
         : base(name, description, room, usable, action) {
-        this.name = name;
-        this.room = room;
         this.networkPlayer = networkPlayer;
+        room.Enter(this);
     }
 
     public string Move(string direction) {
@@ -46,7 +45,7 @@ public class Player : MudObject {
                 break;
             case "w":
             case "west":
-                if (currentPos[1] - 1 >= 0) { 
+                if (currentPos[1] - 1 >= 0) {
                     newRoom = GameManager.dungeon[currentPos[0], currentPos[1] - 1];
                     doorChosen = room.doorWest;
                 }
@@ -56,11 +55,16 @@ public class Player : MudObject {
                 return "You can't go to a gibberish direction";
         }
         if (newRoom != null) {
-            if (doorChosen.GetNextRoom(room) == newRoom && doorChosen.locked == false) {
-                EnterRoom(newRoom);
+            if (doorChosen != null) {
+                if (doorChosen.locked == false) {
+                    EnterRoom(newRoom);
+                }
+                else {
+                    return "The door is locked";
+                }
             }
             else {
-                return "The door is locked";
+                EnterRoom(newRoom);
             }
         }
         else {
@@ -72,7 +76,7 @@ public class Player : MudObject {
     }
 
     void Speak(string text) {
-    
+
     }
 
     void Whisper(string text) {
@@ -80,7 +84,7 @@ public class Player : MudObject {
     }
 
     void Examine(Entity entity) {
-        
+
     }
 
     void EnterRoom(Room newRoom) {
@@ -139,7 +143,16 @@ public class Player : MudObject {
         return "You have nothing with you.";
     }
 
+    public Item GetItem(string name) {
+        foreach (Item item in inventory) {
+            if (item.name.ToLower() == name.ToLower()) {
+                return item;
+            }
+        }
+        return null;
+    }
+
     void Dead() {
-        
+
     }
 }

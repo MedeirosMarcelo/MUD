@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 public class Room : Entity {
 
-    IList<Player> playerList = new List<Player>();
-    IList<Item> itemList = new List<Item>();
-    IList<MudObject> mudObjectList = new List<MudObject>();
+    public IList<Player> playerList = new List<Player>();
+    public IList<Item> itemList = new List<Item>();
+    public IList<MudObject> mudObjectList = new List<MudObject>();
     public Door doorNorth;
     public Door doorSouth;
     public Door doorEast;
@@ -25,15 +25,18 @@ public class Room : Entity {
 
     public void Enter(Player player) {
         playerList.Add(player);
+        mudObjectList.Add(player);
         player.room = this;
     }
 
     public void Exit(Player player) {
         playerList.Remove(player);
+        mudObjectList.Remove(player);
     }
 
     public void AddItem(Item item) {
         itemList.Add(item);
+        mudObjectList.Add(item);
     }
 
     public void AddObject(MudObject obj) {
@@ -42,6 +45,7 @@ public class Room : Entity {
 
     public void RemoveItem(Item item) {
         itemList.Remove(item);
+        mudObjectList.Remove(item);
     }
 
     public void RemoveObject(MudObject obj) {

@@ -7,6 +7,7 @@ public class CommandReader : MonoBehaviour {
 
     Chat chat;
     ServerManager serverManager;
+    bool enabled = true;
 
     void Start() {
         chat = GameObject.FindWithTag("Chat").GetComponent<Chat>();
@@ -14,57 +15,99 @@ public class CommandReader : MonoBehaviour {
     }
 
     public void Read(string text, Player player) {
-        CheckCommand(GetParams(text), player);
+        if (enabled){
+            CheckCommand(text, player);
+        }
     }
 
-    void CheckCommand(string[] command, Player player) {
-        string commandName = command[0].ToLower();
+    void CheckCommand(string text, Player player) {
+        string commandName = GetParams(text)[0].ToLower();
         switch (commandName) {
             case "m":
             case "move":
-                Move(command, player);
+                Move(GetParams(text), player);
                 break;
             case "s":
             case "say":
-                Say(command, player);
+                Say(GetSayParams(text), player);
                 break;
             case "w":
             case "whisper":
-                Whisper(command, player);
+                Whisper(GetWhisperParams(text), player);
                 break;
             case "ex":
             case "examine":
-                Examine(command, player);
+                Examine(GetParams(text), player);
                 break;
+            case "p":
             case "pickup":
-                PickUp(command, player);
+                PickUp(GetParams(text), player);
                 break;
+            case "u":
+            case "use":
+                Use(GetParams(text), player);
+                break;
+            case "d":
             case "drop":
-                Drop(command, player);
+                Drop(GetParams(text), player);
                 break;
             case "search":
-                Search(command, player);
+                Search(GetParams(text), player);
                 break;
             case "map":
-                Map(command, player);
+                Map(GetParams(text), player);
                 break;
+            case "i":
             case "inventory":
-                Inventory(command, player);
+                Inventory(GetParams(text), player);
                 break;
             case "help":
-                Help(command, player);
+                Help(GetParams(text), player);
                 break;
             default:
-                Debug.Log("WRONG COMMAND: " + command);
+                Debug.Log("WRONG COMMAND: " + text);
                 string name = "Server: ";
-                string text = "Invalid Command";
-                ChatToPlayerOrServer(player, name, text);
+                string error = "Invalid Command";
+                ChatToPlayerOrServer(player, name, error);
                 break;
         }
     }
 
+    void EndGame(Player winner) {
+        enabled = false;
+        chat.networkView.RPC("ApplyGlobalChatText", RPCMode.All, "", "Game Over! " + winner.name + " wins!") ;
+    }
+
     string[] GetParams(string text) {
         string[] str = text.Split(new string[1] { " " }, StringSplitOptions.RemoveEmptyEntries);
+        for (int i = 0; i < str.Length; i++) {
+            Debug.Log("GetParams " + str[i]);
+        }
+        return str;
+    }
+
+    string[] GetSayParams(string text) {
+        int index = text.IndexOf(" ");
+        string speechOnly = text.Substring(index);
+        string commandOnly = text.Substring(0, index);
+        string[] str = new string[2] { commandOnly, speechOnly };
+        for (int i = 0; i < str.Length; i++) {
+            Debug.Log("GetParams " + str[i]);
+        }
+        return str;
+    }
+
+    string[] GetWhisperParams(string text) {
+        int indexName = text.IndexOf(" ");
+        string commandOnly = text.Substring(0, indexName);
+
+        string nameOnly = text.Substring(indexName);
+        string[] strTemp = nameOnly.Split(new string[1] { " " }, StringSplitOptions.RemoveEmptyEntries);
+        string newNameOnly = strTemp[0];
+
+        string speechOnly = text.Substring(commandOnly.Length + newNameOnly.Length + 2);
+        
+        string[] str = new string[3] { commandOnly, newNameOnly, speechOnly };
         for (int i = 0; i < str.Length; i++) {
             Debug.Log("GetParams " + str[i]);
         }
@@ -76,6 +119,11 @@ public class CommandReader : MonoBehaviour {
             string direction = command[1].ToLower();
             string moveResult = actingPlayer.Move(direction);
             ChatToPlayerOrServer(actingPlayer, "", moveResult);
+            Player winner;
+            if (serverManager.CheckGameOver(out winner)) {
+                EndGame(winner);
+                Debug.Log("WIN");
+            }
         }
         else {
             ShowWrongCommand(actingPlayer);
@@ -121,7 +169,14 @@ public class CommandReader : MonoBehaviour {
     void Examine(string[] command, Player actingPlayer) {
         if (command.Length == 2) {
             if (command[1].ToLower() == "room") {
-                ChatToPlayerOrServer(actingPlayer, "", actingPlayer.room.name);
+                ChatToPlayerOrServer(actingPlayer, "", actingPlayer.room.description);
+                string examineResult = "You see: ";
+                foreach (MudObject obj in actingPlayer.room.mudObjectList) {
+                    if (obj != actingPlayer) {
+                        examineResult += "\n" + obj.description;
+                    }
+                }
+                ChatToPlayerOrServer(actingPlayer, "", examineResult);
             }
             else {
                 string objName = command[1];
@@ -191,28 +246,28 @@ public class CommandReader : MonoBehaviour {
 
     void Use(string[] command, Player actingPlayer) {
         if (command.Length == 3) {
-            if (actingPlayer.room.GetItem(command[1]) != null) {
-                string objName = command[2];
-                MudObject item = actingPlayer.room.GetItem(objName);
+            string itemName = command[1];
+            string targetName = command[2];
+            Item item = actingPlayer.GetItem(itemName);
+          //  MudObject target = actingPlayer.room.GetMudObject(targetName);
+            Door target = actingPlayer.room.GetMudObject(targetName) as Door;
+            if (item != null && target != null) {
+                if (target.Usable == item) {
+                    item.Use(target);
+                    ChatToPlayerOrServer(actingPlayer, "", "You unlock the door.");
+                }
+                else {
+                    Debug.Log("111");
+                    ChatToPlayerOrServer(actingPlayer, "", "You can't use it like this.");
+                }
+            }
+            else {
+                Debug.Log("222");
+                ChatToPlayerOrServer(actingPlayer, "", "You can't use it like this.");
             }
         }
         else {
             ShowWrongCommand(actingPlayer);
-        }
-        if (command.Length == 3) {
-            if (command[1].ToLower() == "room") {
-                ChatToPlayerOrServer(actingPlayer, "", actingPlayer.room.name);
-            }
-            else {
-                string objName = command[1];
-                MudObject item = actingPlayer.room.GetItem(objName);
-                if (item != null) {
-                    ChatToPlayerOrServer(actingPlayer, "", item.description);
-                }
-                else {
-                    ChatToPlayerOrServer(actingPlayer, "", "There is no such thing to examine.");
-                }
-            }
         }
     }
 

@@ -23,4 +23,8 @@ public class MudObject : Entity {
     public void Use (MudObject target) {
         ObjectAction.Act(action, target);
     }
+
+    public void Use(Door door) {
+        door.Open();
+    }
 }
