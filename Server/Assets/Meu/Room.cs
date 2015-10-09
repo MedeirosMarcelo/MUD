@@ -7,6 +7,10 @@ public class Room : Entity {
     IList<Player> playerList = new List<Player>();
     IList<Item> itemList = new List<Item>();
     IList<MudObject> mudObjectList = new List<MudObject>();
+    public Door doorNorth;
+    public Door doorSouth;
+    public Door doorEast;
+    public Door doorWest;
 
     public Room(string name, string description)
         : base(name, description) {
@@ -21,6 +25,7 @@ public class Room : Entity {
 
     public void Enter(Player player) {
         playerList.Add(player);
+        player.room = this;
     }
 
     public void Exit(Player player) {
@@ -33,6 +38,14 @@ public class Room : Entity {
 
     public void AddObject(MudObject obj) {
         mudObjectList.Add(obj);
+    }
+
+    public void RemoveItem(Item item) {
+        itemList.Remove(item);
+    }
+
+    public void RemoveObject(MudObject obj) {
+        mudObjectList.Remove(obj);
     }
 
     public IList<Item> Search() {

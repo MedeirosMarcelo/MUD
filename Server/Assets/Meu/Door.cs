@@ -3,9 +3,10 @@ using System.Collections;
 
 public class Door : MudObject {
 
-    public bool opened { get; set; }
+    public bool locked { get; set; }
+    public Room room2;
 
-    public Door (string name, string description, Room room, MudObject usable, Entity owner, Action action)
+    public Door(string name, string description, Room room, Room room2, MudObject usable, Entity owner, Action action)
         : base (name, description, room, usable, action) {
     }
 
@@ -14,14 +15,26 @@ public class Door : MudObject {
     }
 
     public void Open() {
-        if (!opened) {
-            opened = true;
+        if (locked) {
+            locked = false;
         }
     }
 
     public void Close() {
-        if (opened) {
-            opened = false;
+        if (!locked) {
+            locked = true;
+        }
+    }
+
+    public Room GetNextRoom(Room currentRoom) {
+        if (currentRoom == room) {
+            return room2;
+        }
+        else if (currentRoom == room2) {
+            return room;
+        }
+        else {
+            return null;
         }
     }
 }

@@ -15,38 +15,60 @@ public class Player : MudObject {
         this.networkPlayer = networkPlayer;
     }
 
-    public bool Move(string direction) {
+    public string Move(string direction) {
         int[] currentPos = GameManager.GetRoomPosition(room);
         Debug.Log(room.name + " Old Position " + currentPos[0] + " " + currentPos[1]);
         Room newRoom = null;
         int lengthI = GameManager.dungeon.GetLength(0);
         int lengthJ = GameManager.dungeon.GetLength(1);
+        Door doorChosen = null;
         switch (direction) {
+            case "n":
             case "north":
-                if (currentPos[0] - 1 >= 0) newRoom = GameManager.dungeon[currentPos[0] - 1, currentPos[1]];
+                if (currentPos[0] - 1 >= 0) {
+                    newRoom = GameManager.dungeon[currentPos[0] - 1, currentPos[1]];
+                    doorChosen = room.doorNorth;
+                }
                 break;
+            case "s":
             case "south":
-                if (currentPos[0] + 1 < lengthI) newRoom = GameManager.dungeon[currentPos[0] + 1, currentPos[1]];
+                if (currentPos[0] + 1 < lengthI) {
+                    newRoom = GameManager.dungeon[currentPos[0] + 1, currentPos[1]];
+                    doorChosen = room.doorSouth;
+                }
                 break;
+            case "e":
             case "east":
-                if (currentPos[1] + 1 < lengthJ) newRoom = GameManager.dungeon[currentPos[0], currentPos[1] + 1];
+                if (currentPos[1] + 1 < lengthJ) {
+                    newRoom = GameManager.dungeon[currentPos[0], currentPos[1] + 1];
+                    doorChosen = room.doorEast;
+                }
                 break;
+            case "w":
             case "west":
-                if (currentPos[1] - 1 >= 0) newRoom = GameManager.dungeon[currentPos[0], currentPos[1] - 1];
+                if (currentPos[1] - 1 >= 0) { 
+                    newRoom = GameManager.dungeon[currentPos[0], currentPos[1] - 1];
+                    doorChosen = room.doorWest;
+                }
                 break;
             default:
                 Debug.Log("Can't go to a gibberish direction");
-                return false;
+                return "You can't go to a gibberish direction";
         }
         if (newRoom != null) {
-            EnterRoom(newRoom);
+            if (doorChosen.GetNextRoom(room) == newRoom && doorChosen.locked == false) {
+                EnterRoom(newRoom);
+            }
+            else {
+                return "The door is locked";
+            }
         }
         else {
-            return false;
+            return "Yeah... you can't go that way.";
         }
         currentPos = GameManager.GetRoomPosition(room);
         Debug.Log(newRoom.name + " New Position " + currentPos[0] + " " + currentPos[1]);
-        return true;
+        return "You go through the door.";
     }
 
     void Speak(string text) {
@@ -64,7 +86,6 @@ public class Player : MudObject {
     void EnterRoom(Room newRoom) {
         room.Exit(this);
         newRoom.Enter(this);
-        this.room = newRoom;
     }
 
     public bool Pickup(string itemName) {
@@ -72,6 +93,8 @@ public class Player : MudObject {
         if (item != null) {
             item.Owner = this;
             inventory.Add(item);
+            room.RemoveItem(item);
+            room.RemoveObject(item);
             return true;
         }
         else {

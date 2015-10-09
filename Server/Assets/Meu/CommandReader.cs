@@ -74,14 +74,8 @@ public class CommandReader : MonoBehaviour {
     void Move(string[] command, Player actingPlayer) {
         if (command.Length == 2) {
             string direction = command[1].ToLower();
-            if (actingPlayer.Move(direction)) {
-                ChatToPlayerOrServer(actingPlayer, "", command[0] + " " + command[1]);
-                ChatToPlayerOrServer(actingPlayer, "", GameManager.UpdateMapPosition(actingPlayer));
-            }
-            else {
-                ChatToPlayerOrServer(actingPlayer, "", "You can't move that way.");
-                ChatToPlayerOrServer(actingPlayer, "", GameManager.UpdateMapPosition(actingPlayer));
-            }
+            string moveResult = actingPlayer.Move(direction);
+            ChatToPlayerOrServer(actingPlayer, "", moveResult);
         }
         else {
             ShowWrongCommand(actingPlayer);
@@ -176,19 +170,19 @@ public class CommandReader : MonoBehaviour {
 
     void Search(string[] command, Player actingPlayer) {
         if (command.Length == 2) {
+            string result = "";
             if (command[1].ToLower() == "room") {
                 IList<Item> itemList = actingPlayer.room.Search();
-                string listItems = "";
-                if (itemList != null) {
+                if (itemList.Count > 0) {
                     foreach (Item item in itemList) {
-                        listItems += "You find " + item.name + " ";
+                        result += "You find " + item.name + " ";
                     }
                 }
-                ChatToPlayerOrServer(actingPlayer, "", listItems);
+                else {
+                    result = "You find nothing.";
+                }
             }
-            else {
-                ChatToPlayerOrServer(actingPlayer, "", "You find nothing.");
-            }
+            ChatToPlayerOrServer(actingPlayer, "", result);
         }
         else {
             ShowWrongCommand(actingPlayer);
