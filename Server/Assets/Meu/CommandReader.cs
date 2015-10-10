@@ -15,7 +15,7 @@ public class CommandReader : MonoBehaviour {
     }
 
     public void Read(string text, Player player) {
-        if (enabled){
+        if (enabled) {
             CheckCommand(text, player);
         }
     }
@@ -75,7 +75,7 @@ public class CommandReader : MonoBehaviour {
 
     void EndGame(Player winner) {
         enabled = false;
-        chat.networkView.RPC("ApplyGlobalChatText", RPCMode.All, "", "Game Over! " + winner.name + " wins!") ;
+        chat.networkView.RPC("ApplyGlobalChatText", RPCMode.All, "", "Game Over! " + winner.name + " wins!");
     }
 
     string[] GetParams(string text) {
@@ -106,7 +106,7 @@ public class CommandReader : MonoBehaviour {
         string newNameOnly = strTemp[0];
 
         string speechOnly = text.Substring(commandOnly.Length + newNameOnly.Length + 2);
-        
+
         string[] str = new string[3] { commandOnly, newNameOnly, speechOnly };
         for (int i = 0; i < str.Length; i++) {
             Debug.Log("GetParams " + str[i]);
@@ -117,8 +117,15 @@ public class CommandReader : MonoBehaviour {
     void Move(string[] command, Player actingPlayer) {
         if (command.Length == 2) {
             string direction = command[1].ToLower();
-            string moveResult = actingPlayer.Move(direction);
+            bool moved = false;
+            Room oldRoom;
+            string moveResult = actingPlayer.Move(direction, out moved, out oldRoom);
             ChatToPlayerOrServer(actingPlayer, "", moveResult);
+            if (moved) {
+                NoticeToOthers(actingPlayer, actingPlayer.name + " went through the " + GetDirection(command[1]) + " Door", oldRoom);
+                string[] exam = new string[2] { "examine", "room" };
+                Examine(exam, actingPlayer);
+            }
             Player winner;
             if (serverManager.CheckGameOver(out winner)) {
                 EndGame(winner);
@@ -150,14 +157,21 @@ public class CommandReader : MonoBehaviour {
             string text = command[2];
             Player target = serverManager.GetPlayerNode(playerName);
             if (target != null) {
-                playerName = "whisper to [" + command[1] + "]";
-                ChatToPlayerOrServer(actingPlayer, playerName, text);
-                playerName = "[" + actingPlayer.name + "] whispers";
-                ChatToPlayerOrServer(target, playerName, text);
+                if (actingPlayer.room == target.room) {
+                    playerName = "whisper to [" + command[1] + "]";
+                    ChatToPlayerOrServer(actingPlayer, playerName, text);
+                    playerName = "[" + actingPlayer.name + "] whispers";
+                    ChatToPlayerOrServer(target, playerName, text);
+                }
+                else {
+                    playerName = "Server: ";
+                    text = "There is no one with the name " + command[1] + " in the room you are in.";
+                    ChatToPlayerOrServer(actingPlayer, playerName, text);
+                }
             }
             else {
                 playerName = "Server: ";
-                text = "Player " + command[1] + " Doesn't Exist!";
+                text = "There is no one with the name " + command[1] + " in the room you are in.";
                 ChatToPlayerOrServer(actingPlayer, playerName, text);
             }
         }
@@ -171,11 +185,14 @@ public class CommandReader : MonoBehaviour {
             if (command[1].ToLower() == "room") {
                 ChatToPlayerOrServer(actingPlayer, "", actingPlayer.room.description);
                 string examineResult = "You see: ";
+                bool foundSomething = false;
                 foreach (MudObject obj in actingPlayer.room.mudObjectList) {
                     if (obj != actingPlayer) {
                         examineResult += "\n" + obj.description;
+                        foundSomething = true;
                     }
                 }
+                if (!foundSomething) examineResult = "You can't see shit captain.";
                 ChatToPlayerOrServer(actingPlayer, "", examineResult);
             }
             else {
@@ -197,7 +214,8 @@ public class CommandReader : MonoBehaviour {
     void PickUp(string[] command, Player actingPlayer) {
         if (command.Length == 2) {
             if (actingPlayer.Pickup(command[1])) {
-                ChatToPlayerOrServer(actingPlayer, "", "You put " + command[1] + " in your inventory");
+                ChatToPlayerOrServer(actingPlayer, "", "You put " + command[1] + " in your inventory.");
+                NoticeToOthers(actingPlayer, actingPlayer.name + " picked up the " + command[1] + ".");
             }
             else {
                 ChatToPlayerOrServer(actingPlayer, "", "There is no such thing in the room.");
@@ -211,8 +229,9 @@ public class CommandReader : MonoBehaviour {
     void Drop(string[] command, Player actingPlayer) {
         if (command.Length == 2) {
             if (actingPlayer.Drop(command[1])) {
-                ChatToPlayerOrServer(actingPlayer, "", "You dropped " + command[1] + " on the floor");
-                chat.networkView.RPC("ApplyGlobalChatText", RPCMode.Others, actingPlayer.name + " dropped " + command[1] + " on the floor");
+                ChatToPlayerOrServer(actingPlayer, "", "You dropped " + command[1] + " on the floor.");
+                NoticeToOthers(actingPlayer, actingPlayer.name + " dropped " + command[1] + " on the floor.");
+              //  chat.networkView.RPC("ApplyGlobalChatText", RPCMode.Others, actingPlayer.name + " dropped " + command[1] + " on the floor");
             }
             else {
                 ChatToPlayerOrServer(actingPlayer, "", "There is no such thing in your inventory.");
@@ -249,12 +268,13 @@ public class CommandReader : MonoBehaviour {
             string itemName = command[1];
             string targetName = command[2];
             Item item = actingPlayer.GetItem(itemName);
-          //  MudObject target = actingPlayer.room.GetMudObject(targetName);
+            //  MudObject target = actingPlayer.room.GetMudObject(targetName);
             Door target = actingPlayer.room.GetMudObject(targetName) as Door;
             if (item != null && target != null) {
                 if (target.Usable == item) {
                     item.Use(target);
                     ChatToPlayerOrServer(actingPlayer, "", "You unlock the door.");
+                    NoticeToOthers(actingPlayer, actingPlayer.name + " unlocked the door with the " + command[1] + ".");
                 }
                 else {
                     Debug.Log("111");
@@ -309,8 +329,32 @@ public class CommandReader : MonoBehaviour {
         }
     }
 
+    void NoticeToOthers(Player player, string text, Room room) {
+        foreach (Player pl in serverManager.playerList) {
+            if (pl != player && pl.room == room) {
+                ChatToPlayerOrServer(pl, "", text);
+            }
+        }
+    }
+
+    void NoticeToOthers(Player player, string text) {
+        foreach (Player pl in serverManager.playerList) {
+            if (pl != player && pl.room == player.room) {
+                ChatToPlayerOrServer(pl, "", text);
+            }
+        }
+    }
+
     void ShowWrongCommand(Player actingPlayer) {
         ChatToPlayerOrServer(actingPlayer, "", "WRONG COMMAND");
+    }
+
+    string GetDirection(string s) {
+        if (s == "n") return "Northern";
+        if (s == "s") return "Southern";
+        if (s == "e") return "Eastern";
+        if (s == "w") return "Western";
+        else return "";
     }
 }
 

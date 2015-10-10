@@ -10,6 +10,7 @@ public static class GameManager {
     public static void BuildLevel () {
 
         Room room00 = new Room("room 00", "It's clearly a room");
+
         Room room01 = new Room("room 01", "It's clearly a room");
         Room room02 = new Room("room 02", "It's clearly a room");
         Room room10 = new Room("room 10", "It's clearly a room");
@@ -19,10 +20,10 @@ public static class GameManager {
         //Room room21 = new Room("room 21", "room description");
         Room room22 = new Room("room 22", "It's clearly a room");
 
-        Item key = new Item("Key", "A brass key", room11, null, Action.OpenDoor, room11);
+        Item key = new Item("Key", "A brass object used to unlock a specific lock. Commonly known as a 'Key'", room11, null, Action.OpenDoor, room11);
         room11.AddItem(key);
 
-        Door door = new Door("Door", "A wooden door.", room12, room22, key, null, Action.None);
+        Door door = new Door("Door", "A wooden board with hinges on one side, usually used to block a passage way. Commonly known as a 'Door'", room12, room22, key, null, Action.None);
         door.locked = true;
         room12.doorSouth = door;
         room12.AddObject(door);

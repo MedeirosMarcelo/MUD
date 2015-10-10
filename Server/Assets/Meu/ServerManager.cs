@@ -43,7 +43,7 @@ public class ServerManager : MonoBehaviour {
 
     public void InitializePlayer(string userName, NetworkPlayer networkPlayer) {
         string newName = RectifyUserName(userName, networkPlayer);
-        Player player = new Player(newName, "A nerd", GameManager.startingRoom, networkPlayer, null, Action.None);
+        Player player = new Player(newName, "A wild nerd appears.", GameManager.startingRoom, networkPlayer, null, Action.None);
         playerList.Add(player);
         chat.addGameChatMessage(player.name + " joined the chat.");
     }

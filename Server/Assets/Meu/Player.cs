@@ -14,7 +14,7 @@ public class Player : MudObject {
         room.Enter(this);
     }
 
-    public string Move(string direction) {
+    public string Move(string direction, out bool canMove, out Room oldRoom) {
         int[] currentPos = GameManager.GetRoomPosition(room);
         Debug.Log(room.name + " Old Position " + currentPos[0] + " " + currentPos[1]);
         Room newRoom = null;
@@ -52,27 +52,39 @@ public class Player : MudObject {
                 break;
             default:
                 Debug.Log("Can't go to a gibberish direction");
+                canMove = false;
+                oldRoom = null;
                 return "You can't go to a gibberish direction";
         }
         if (newRoom != null) {
             if (doorChosen != null) {
                 if (doorChosen.locked == false) {
+                    oldRoom = room;
                     EnterRoom(newRoom);
+                    currentPos = GameManager.GetRoomPosition(room);
+                    Debug.Log(newRoom.name + " New Position " + currentPos[0] + " " + currentPos[1]);
+                    canMove = true;
+                    return "You go through the door.";
                 }
                 else {
+                    canMove = false;
+                    oldRoom = null;
                     return "The door is locked";
                 }
             }
             else {
+                oldRoom = room;
                 EnterRoom(newRoom);
+                currentPos = GameManager.GetRoomPosition(room);
+                canMove = true;
+                return "You go through the door.";
             }
         }
         else {
+            canMove = false;
+            oldRoom = null;
             return "Yeah... you can't go that way.";
         }
-        currentPos = GameManager.GetRoomPosition(room);
-        Debug.Log(newRoom.name + " New Position " + currentPos[0] + " " + currentPos[1]);
-        return "You go through the door.";
     }
 
     void Speak(string text) {
@@ -107,10 +119,11 @@ public class Player : MudObject {
     }
 
     public bool Drop(string itemName) {
-        Item item = room.GetItem(itemName);
+        Item item = GetItem(itemName);
         if (item != null) {
             inventory.Remove(item);
             item.Owner = this.room;
+            room.AddItem(item);
             return true;
         }
         else {
